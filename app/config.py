@@ -2,15 +2,27 @@ import os
 
 
 class Config:
+
     SECRET_KEY = os.getenv(
         "SECRET_KEY",
         "development-secret-key"
     )
 
-    SQLALCHEMY_DATABASE_URI = os.getenv(
+    DATABASE_URL = os.getenv(
         "DATABASE_URL",
         "sqlite:///outing.db"
     )
+
+    # Render/PostgreSQL may provide postgres://
+    # SQLAlchemy expects postgresql://
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace(
+            "postgres://",
+            "postgresql://",
+            1
+        )
+
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -20,12 +32,19 @@ class Config:
     )
 
     MAIL_PORT = int(
-        os.getenv("MAIL_PORT", "587")
+        os.getenv(
+            "MAIL_PORT",
+            "587"
+        )
     )
 
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_USERNAME = os.getenv(
+        "MAIL_USERNAME"
+    )
 
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_PASSWORD = os.getenv(
+        "MAIL_PASSWORD"
+    )
 
     MAIL_USE_TLS = os.getenv(
         "MAIL_USE_TLS",
