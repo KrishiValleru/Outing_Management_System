@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>Admin Dashboard</h1>
+
+                <p>
+                    Welcome, {{ current_user.name }}
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-button"
+            >
+                Logout
+            </a>
+
+        </header>
+
+
+        <section class="welcome-card">
+
+            <h2>
+                Campus Outing Administration
+            </h2>
+
+            <p>
+                Manage permitted outing dates
+                and campus leave operations.
+            </p>
+
+            <a
+                href="{{ url_for('admin.permitted_dates') }}"
+                class="primary-button"
+            >
+                Manage Leave Calendar
+            </a>
+
+        </section>
+
+
+        <section class="applications">
+
+            <div class="section-header">
+
+                <h2>
+                    Permitted Outing Dates
+                </h2>
+
+            </div>
+
+
+            {% if permitted_dates %}
+
+                <div class="application-list">
+
+                    {% for permitted_date in permitted_dates %}
+
+                        <div class="application-card">
+
+                            <div>
+
+                                <h3>
+                                    {{ permitted_date.leave_date }}
+                                </h3>
+
+                                {% if permitted_date.description %}
+
+                                    <p>
+                                        {{ permitted_date.description }}
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <p>
+                        No permitted outing dates
+                        have been added yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Review Leave Application</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h1>Review Leave Application</h1>
+
+                <p>
+                    Review the outing request
+                </p>
+            </div>
+
+            <a
+                href="{{ url_for('parent.dashboard') }}"
+                class="logout-button"
+            >
+                Back
+            </a>
+
+        </header>
+
+
+        <section class="welcome-card">
+
+            <h2>
+                {{ application.student.name }}
+            </h2>
+
+            <p>
+                <strong>Leave Date:</strong>
+                {{ application.leave_date }}
+            </p>
+
+            <p>
+                <strong>Leave Type:</strong>
+                {{ application.leave_type|title }}
+            </p>
+
+            <p>
+                <strong>Reason:</strong>
+                {{ application.reason }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+
+                <span class="status {{ application.status }}">
+                    {{ application.status|title }}
+                </span>
+
+            </p>
+
+
+            {% if application.status == "pending" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'parent.application',
+                        application_id=application.id
+                    ) }}"
+                >
+
+                    <label for="parent_comment">
+                        Comment
+                    </label>
+
+                    <textarea
+                        id="parent_comment"
+                        name="parent_comment"
+                        rows="4"
+                        placeholder="Optional comment..."
+                    ></textarea>
+
+
+                    <button
+                        type="submit"
+                        name="decision"
+                        value="approved"
+                    >
+                        Approve Leave
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        name="decision"
+                        value="declined"
+                    >
+                        Decline Leave
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p style="margin-top: 20px;">
+                    This application has already been reviewed.
+                </p>
+
+                {% if application.parent_comment %}
+
+                    <p style="margin-top: 15px;">
+
+                        <strong>
+                            Parent Comment:
+                        </strong>
+
+                        {{ application.parent_comment }}
+
+                    </p>
+
+                {% endif %}
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

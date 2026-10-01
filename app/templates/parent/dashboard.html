@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Parent Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>Parent Dashboard</h1>
+
+                <p>
+                    Welcome, {{ current_user.name }}
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-button"
+            >
+                Logout
+            </a>
+
+        </header>
+
+
+        <section class="applications">
+
+            <div class="section-header">
+
+                <h2>
+                    Your Child's Leave Applications
+                </h2>
+
+            </div>
+
+
+            {% if applications %}
+
+                <div class="application-list">
+
+                    {% for application in applications %}
+
+                        <div class="application-card">
+
+                            <div>
+
+                                <h3>
+                                    {{ application.leave_date }}
+                                </h3>
+
+                                <p>
+                                    <strong>Student:</strong>
+                                    {{ application.student.name }}
+                                </p>
+
+                                <p>
+                                    <strong>Type:</strong>
+                                    {{ application.leave_type|title }}
+                                </p>
+
+                                <p>
+                                    <strong>Reason:</strong>
+                                    {{ application.reason }}
+                                </p>
+
+                            </div>
+
+
+                            <div>
+
+                                <span
+                                    class="status {{ application.status }}"
+                                >
+                                    {{ application.status|title }}
+                                </span>
+
+
+                                {% if application.status == "pending" %}
+
+                                    <div style="margin-top: 15px;">
+
+                                        <a
+                                            href="{{ url_for(
+                                                'parent.application',
+                                                application_id=application.id
+                                            ) }}"
+                                            class="primary-button"
+                                        >
+                                            Review
+                                        </a>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <p>
+                        There are no leave applications yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

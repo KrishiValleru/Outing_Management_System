@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Student Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        .calendar-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.06);
+            margin-bottom: 30px;
+        }
+
+        .calendar-card h2 {
+            margin-bottom: 8px;
+        }
+
+        .calendar-card > p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .calendar-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .calendar-date {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 15px 18px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .calendar-date strong {
+            font-size: 16px;
+        }
+
+        .calendar-description {
+            color: #666;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .calendar-empty {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+
+            .calendar-date {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .calendar-description {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>
+                    Student Dashboard
+                </h1>
+
+                <p>
+                    Welcome, {{ current_user.name }}
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="logout-button"
+            >
+                Logout
+            </a>
+
+        </header>
+
+
+        <main>
+
+            <section class="welcome-card">
+
+                <h2>
+                    Campus Outing
+                </h2>
+
+                <p>
+                    Apply for leave and track your
+                    applications from here.
+                </p>
+
+                <a
+                    href="{{ url_for('student.apply_leave') }}"
+                    class="primary-button"
+                >
+                    Apply for Leave
+                </a>
+
+            </section>
+
+
+            <section class="calendar-card">
+
+                <h2>
+                    Permitted Outing Dates
+                </h2>
+
+                <p>
+                    These are the dates currently
+                    permitted by the administration
+                    for regular leave applications.
+                </p>
+
+
+                {% if permitted_dates %}
+
+                    <div class="calendar-list">
+
+                        {% for permitted_date in permitted_dates %}
+
+                            <div class="calendar-date">
+
+                                <strong>
+                                    {{ permitted_date.leave_date.strftime('%d %B %Y') }}
+                                </strong>
+
+                                {% if permitted_date.description %}
+
+                                    <span class="calendar-description">
+                                        {{ permitted_date.description }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="calendar-description">
+                                        Regular outing permitted
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="calendar-empty">
+
+                        No regular outing dates have been
+                        announced by the administration yet.
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <section class="applications">
+
+                <div class="section-header">
+
+                    <h2>
+                        My Leave Applications
+                    </h2>
+
+                </div>
+
+
+                {% if applications %}
+
+                    <div class="application-list">
+
+                        {% for application in applications %}
+
+                            <div class="application-card">
+
+                                <div>
+
+                                    <h3>
+                                        {{ application.leave_date }}
+                                    </h3>
+
+                                    <p>
+                                        {{ application.leave_type|title }}
+                                    </p>
+
+                                    <p>
+                                        {{ application.reason }}
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span
+                                        class="status {{ application.status }}"
+                                    >
+                                        {{ application.status|title }}
+                                    </span>
+
+
+                                    {% if application.status == "approved" %}
+
+                                        <div
+                                            style="
+                                                margin-top: 15px;
+                                            "
+                                        >
+
+                                            <a
+                                                href="{{ url_for(
+                                                    'student.qr_code',
+                                                    application_id=application.id
+                                                ) }}"
+                                                class="primary-button"
+                                            >
+                                                View QR Code
+                                            </a>
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <p>
+                            You haven't applied for any
+                            leave yet.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

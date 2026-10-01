@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Leave Calendar</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>Leave Calendar</h1>
+
+                <p>
+                    Manage dates on which students
+                    may request regular outings.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('admin.dashboard') }}"
+                class="logout-button"
+            >
+                Back
+            </a>
+
+        </header>
+
+
+        <section class="welcome-card">
+
+            <h2>
+                Add Permitted Outing Date
+            </h2>
+
+            <p>
+                Regular leave applications will
+                later be restricted to these dates.
+            </p>
+
+
+            <form method="POST">
+
+                <label for="leave_date">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="leave_date"
+                    name="leave_date"
+                    required
+                >
+
+
+                <label for="description">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="description"
+                    name="description"
+                    placeholder="Example: Weekend outing"
+                >
+
+
+                <button type="submit">
+                    Add Permitted Date
+                </button>
+
+            </form>
+
+
+            {% with messages =
+                get_flashed_messages(
+                    with_categories=true
+                )
+            %}
+
+                {% for category, message in messages %}
+
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endwith %}
+
+        </section>
+
+
+        <section class="applications">
+
+            <div class="section-header">
+
+                <h2>
+                    Permitted Dates
+                </h2>
+
+            </div>
+
+
+            {% if permitted_dates %}
+
+                <div class="application-list">
+
+                    {% for permitted_date in permitted_dates %}
+
+                        <div class="application-card">
+
+                            <div>
+
+                                <h3>
+                                    {{ permitted_date.leave_date }}
+                                </h3>
+
+                                {% if permitted_date.description %}
+
+                                    <p>
+                                        {{ permitted_date.description }}
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'admin.delete_permitted_date',
+                                    date_id=permitted_date.id
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    style="
+                                        margin-top: 0;
+                                        background: #991b1b;
+                                    "
+                                >
+                                    Remove
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <p>
+                        No permitted dates yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

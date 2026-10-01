@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Outing QR Code</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        .qr-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .qr-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .qr-card h1 {
+            margin-bottom: 10px;
+        }
+
+        .qr-card p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .qr-image {
+            width: 300px;
+            height: 300px;
+            margin: 25px auto;
+            display: block;
+        }
+
+        .qr-warning {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="qr-container">
+
+        <div class="qr-card">
+
+            <h1>
+                Campus Outing QR Code
+            </h1>
+
+            <p>
+                {{ application.student.name }}
+            </p>
+
+            <p>
+                Leave Date:
+                <strong>
+                    {{ application.leave_date }}
+                </strong>
+            </p>
+
+            <img
+                class="qr-image"
+                src="data:image/png;base64,{{ qr_base64 }}"
+                alt="Campus Outing QR Code"
+            >
+
+            <p>
+                Show this QR code at the campus gate.
+            </p>
+
+            <div class="qr-warning">
+
+                Keep this QR code private.
+                It is used to verify your approved outing.
+
+            </div>
+
+            <br>
+
+            <a
+                href="{{ url_for('student.dashboard') }}"
+                class="primary-button"
+            >
+                Back to Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

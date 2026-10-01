@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Apply for Leave</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        .date-info {
+            margin-top: 8px;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .date-info strong {
+            color: #222;
+        }
+
+        .date-warning {
+            display: none;
+            margin-top: 8px;
+            padding: 12px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <h1>
+                    Apply for Leave
+                </h1>
+
+                <p>
+                    Submit a new campus outing request.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('student.dashboard') }}"
+                class="logout-button"
+            >
+                Back
+            </a>
+
+        </header>
+
+
+        <section class="welcome-card">
+
+            <h2>
+                Leave Application
+            </h2>
+
+            <p>
+                Select the type of leave you need.
+            </p>
+
+
+            <form
+                method="POST"
+                class="leave-form"
+                id="leave-form"
+            >
+
+                <label for="leave_type">
+                    Leave Type
+                </label>
+
+                <select
+                    id="leave_type"
+                    name="leave_type"
+                    required
+                >
+
+                    <option value="">
+                        Select leave type
+                    </option>
+
+                    <option value="regular">
+                        Regular Leave
+                    </option>
+
+                    <option value="emergency">
+                        Emergency Leave
+                    </option>
+
+                </select>
+
+
+                <div class="date-info">
+
+                    <strong>
+                        Regular Leave:
+                    </strong>
+
+                    Only dates announced by the
+                    administration can be selected.
+
+                    <br><br>
+
+                    <strong>
+                        Emergency Leave:
+                    </strong>
+
+                    Any future date can be selected.
+
+                </div>
+
+
+                <label for="leave_date">
+                    Leave Date
+                </label>
+
+                <input
+                    type="date"
+                    id="leave_date"
+                    name="leave_date"
+                    min="{{ today }}"
+                    required
+                    disabled
+                >
+
+
+                <div
+                    id="date-warning"
+                    class="date-warning"
+                >
+                    Please select a date permitted by
+                    the administration for regular leave.
+                </div>
+
+
+                <label for="reason">
+                    Reason
+                </label>
+
+                <textarea
+                    id="reason"
+                    name="reason"
+                    rows="5"
+                    placeholder="Explain why you need to leave campus..."
+                    required
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                    id="submit-button"
+                >
+                    Submit Leave Application
+                </button>
+
+            </form>
+
+
+            {% with messages =
+                get_flashed_messages(
+                    with_categories=true
+                )
+            %}
+
+                {% for category, message in messages %}
+
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endwith %}
+
+        </section>
+
+    </div>
+
+
+    <script>
+
+        const leaveType =
+            document.getElementById(
+                "leave_type"
+            );
+
+        const leaveDate =
+            document.getElementById(
+                "leave_date"
+            );
+
+        const dateWarning =
+            document.getElementById(
+                "date-warning"
+            );
+
+
+        const permittedDates =
+            {{ permitted_dates | tojson }};
+
+
+        function updateDatePicker() {
+
+            const selectedType =
+                leaveType.value;
+
+
+            leaveDate.disabled =
+                selectedType === "";
+
+
+            if (selectedType === "") {
+
+                leaveDate.value = "";
+
+                leaveDate.removeAttribute(
+                    "min"
+                );
+
+                dateWarning.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            if (selectedType === "regular") {
+
+                leaveDate.min =
+                    "{{ today }}";
+
+                dateWarning.style.display =
+                    "none";
+
+            }
+
+
+            if (selectedType === "emergency") {
+
+                leaveDate.min =
+                    "{{ today }}";
+
+                dateWarning.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        leaveType.addEventListener(
+            "change",
+            updateDatePicker
+        );
+
+
+        leaveDate.addEventListener(
+            "change",
+            function () {
+
+                if (
+                    leaveType.value === "regular"
+                    &&
+                    leaveDate.value
+                    &&
+                    !permittedDates.includes(
+                        leaveDate.value
+                    )
+                ) {
+
+                    dateWarning.style.display =
+                        "block";
+
+                    leaveDate.value = "";
+
+                } else {
+
+                    dateWarning.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+
+        document
+            .getElementById("leave-form")
+            .addEventListener(
+                "submit",
+                function (event) {
+
+                    if (
+                        leaveType.value === "regular"
+                        &&
+                        !permittedDates.includes(
+                            leaveDate.value
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+                        dateWarning.style.display =
+                            "block";
+
+                        leaveDate.focus();
+
+                    }
+
+                }
+            );
+
+
+        updateDatePicker();
+
+    </script>
+
+</body>
+
+</html>
